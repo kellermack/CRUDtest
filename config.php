@@ -1,12 +1,9 @@
 <?php
 
-$host = "localhost";
-$username = "root";
-$password = "";
 
-$conn = new mysqli($host, $username, $password);
+$mysqli = mysqli_connect('localhost', 'root', '', 'crudtest');
 
-if($conn === false) {
-    die("ERROR: Could Not connect. " . $conn->connect_error);
+if (!$mysqli) {
+    die("Connection failed: ".mysqli_connect_error());
 }
 
