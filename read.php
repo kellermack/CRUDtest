@@ -3,8 +3,9 @@
 if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
 
     require_once "config.php";
-    // prepare statement to get custoer id 
-    $sql = "SELECT * FROM customerlist WHERE id = ?";
+    // prepare statement to get customer id 
+    $sql = "SELECT customerlist.customer_id FROM customerlist 
+    INNER JOIN customernotes ON customerlist.customer_id = customernotes.customer_id";
 
     if ($stmt = $mysqli->prepare($sql)) {
         $stmt->bind_param("i", $param_id);
@@ -23,6 +24,7 @@ if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
                 $name = $row["name"];
                 $address = $row["address"];
                 $phone = $row["phone"];
+                $notes = $row["notes"];
             } else {
                 // if no values found seen to error page
                 header("location: error.php");
@@ -77,6 +79,10 @@ if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
                     <div class="form-group">
                         <label>Phone</label>
                         <p><b><?php echo $row["phone"]; ?></b></p>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <p><b><?php echo $row["notes"]; ?></b></p>
                     </div>
                     <p><a href="index.php" class="btn btn-primary">Back</a></p>
                 </div>

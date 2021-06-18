@@ -4,8 +4,8 @@
 require_once "config.php";
 
 // Define variables and initialize
-$name = $address = $phone = "";
-$nameErr = $addressErr = $phoneErr = "";
+$name = $address = $phone = $notes = "";
+$nameErr = $addressErr = $phoneErr = $notesErr = "";
 
 //Process form data when it is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -41,6 +41,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $phone = $inputPhone;
     }
 
+    //Lets insert Customer notes
+    $inputNotes = trim($_POST["notes"]);
+    if (empty($inputNotes)) {
+        $notesErr = "Please enter a customer note.";
+    } else{
+        $notes = $inputNotes;
+    }
+
     //Check to make sure we have no input errors before insert into DB 
     if (empty($nameErr) && empty($addressErr) && empty($phoneErr)) {
         //insert data
@@ -55,6 +63,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $paramAddress = $address;
             $paramPhone = $phone;
 
+            //execute the prepared statement
+            if ($stmt->execute()) {
+                //if successful we will go back to landing page
+                header("location: index.php");
+                exit();
+            } else {
+                echo "Something bad happened.....try again.";
+            }
+        }
+        //close everything
+        $stmt->close();
+    }
+    $mysqli->close();
+
+    //Check to make sure we have no input errors before insert into DB 
+    if (empty($notesErr)) {
+        //insert data
+        $sql = "INSERT INTO customernotes (notes) VALUES (?)";
+
+        if ($stmt = $mysqli->prepare($sql)) {
+            //Lets Bind variables in the prepared statement
+            $stmt->bind_param("s", $notes);
+
+            //Setting the parameters 
+            $paramNotes = $notes;
             //execute the prepared statement
             if ($stmt->execute()) {
                 //if successful we will go back to landing page

@@ -42,6 +42,15 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
         $phone = $inputPhone;
     }
 
+    //Lets insert Customer notes
+    $inputNotes = trim($_POST["notes"]);
+    if (empty($inputNotes)) {
+        $notesErr = "Please enter a customer note.";
+    } else{
+        $notes = $inputNotes;
+    }
+
+
     //Check to make sure we have no input errors before insert into DB 
     if (empty($nameErr) && empty($addressErr) && empty($phoneErr)) {
         //update statement
@@ -57,7 +66,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
             $paramPhone = $phone;
             $paramId = $id;
 
-            //execture prepared statement
+            //execute prepared statement
             if ($stmt->execute()) {
                 //if successful redirect to landing
                 header("location: index.php");
@@ -106,12 +115,35 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
 
         $stmt->close();
 
-        $mysqli->close();
+        
     } else {
         //if error redirect to error page
         header("location: error.php");
         exit();
     }
+    if (empty($notesErr)) {
+        //insert data
+        $sql = "INSERT INTO customernotes (notes) VALUES (?)";
+
+        if ($stmt = $mysqli->prepare($sql)) {
+            //Lets Bind variables in the prepared statement
+            $stmt->bind_param("s", $notes);
+
+            //Setting the parameters 
+            $paramNotes = $notes;
+            //execute the prepared statement
+            if ($stmt->execute()) {
+                //if successful we will go back to landing page
+                header("location: index.php");
+                exit();
+            } else {
+                echo "Something bad happened.....try again.";
+            }
+        }
+        //close everything
+        $stmt->close();
+    }
+    $mysqli->close();
 }
 
 ?>
@@ -159,6 +191,12 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
                             <input type="text" name="phone" class="form-control <?php echo (!empty($phoneErr))
                                                                                     ? 'is-invalid' : ''; ?>" value="<?php echo $phone; ?>">
                             <span class="invalid-feedback"><?php echo $phoneErr; ?></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <input type="text" name="notes" class="form-control <?php echo (!empty($notesErr))
+                                                                                    ? 'is-invalid' : ''; ?>" value="<?php echo $notes; ?>">
+                            <span class="invalid-feedback"><?php echo $notesErr; ?></span>
                         </div>
 
                         <input type="hidden" name="id" value="<?php echo $id; ?>" />

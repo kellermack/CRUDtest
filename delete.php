@@ -5,7 +5,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
     require_once "config.php";
 
     //prepare the delete statement
-    $sql = "DELETE FROM customerlist WHERE id = ?";
+    $sql = "DELETE FROM customerlist WHERE customer_id = ?";
 
     if ($stmt = $mysqli->prepare($sql)) {
         //bind variables
@@ -19,7 +19,7 @@ if (isset($_POST["id"]) && !empty($_POST["id"])) {
             header("location: index.php");
             exit();
         } else {
-            echo "Looks like something didnt work right.";
+            echo "Looks like something didn't work right.";
         }
     }
 
